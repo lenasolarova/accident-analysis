@@ -97,35 +97,37 @@ def seatbelt_injury(DATA_FRAME_ALL):
 
 
 #calculates the most dangerous city parts
+#TODO decide if this one is adding any value for the script
 def city_part(DATA_FRAME_NON_DUP):
     pass
 
 
 
 
-# ---------- CLI ----------
-@click.group()
+# ------------------------------ CLI ------------------------------
+@click.group(help="This script analyzes car accidents from Brno, Czechia")
 def cli():
     pass
 
-@cli.command()
+@cli.command(help="Percentage of accidents directly caused by alcohol")
 def alcohol():
     print("Percentage of accidents directly caused by alcohol")
     print(caused_by_alcohol(DATA_FRAME_NON_DUP))
 
-@cli.command()
+@cli.command(help="Days of the week sorted by the highest percentage of accidents")
 def days():
-    print("Days sorted by the most accidents")
+    print("Days of the week sorted by the highest percentage of accidents")
     for day, value in percent_per_day(DATA_FRAME_NON_DUP).items():
         print(f"{day}: {value}%")
 
-@cli.command()
+@cli.command(help="Times of day with the most accidents")
 def time():
     print("Times of day with the most accidents")
     for time, value in percent_per_day_time(DATA_FRAME_NON_DUP).items():
         print(f"{time}: {value}%")
 
-@cli.command()
+@cli.command(help="Relationship between driver driving under the influence," \
+    "wearing a seatbelt and resulting injury")
 def seatbelt():
     print("Relationship between driver driving under the influence," \
     "wearing a seatbelt and resulting injury")

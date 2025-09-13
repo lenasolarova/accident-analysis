@@ -6,3 +6,6 @@ I have chosen to work with Python an C because of their vast differences - more 
 ### Python
 To run the python script, it is recommended to enter into a virtual environment,
 there you can install the requirements using ```pip install -r requirements.txt``` and finally run the file using the CLI (see ```python main.py --help``` for all options).
+
+### C
+To run the C code, simply run it using ```./main <argument>```. You can again, find the arguments by running ```./main --help``` but the arguments are the same in both C and Python case.
