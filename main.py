@@ -1,42 +1,34 @@
 import pandas
 import click
 
+import mapping
+
+#TODO delete after I am done with changing mapping.py
+import importlib
+importlib.reload(mapping)
+
 PATH = "dopravni_nehody_-1895066464895987623.csv"
 
-DAY_MAP = {
-    1: "Monday",
-    2: "Tuesday",
-    3: "Wednesday",
-    4: "Thursday",
-    5: "Friday",
-    6: "Saturday",
-    7: "Sunday"
-    }
+"""
+dataframe with no duplicates = duplicate in this file means 
+the same accident_id (id_nehody) because every person 
+involved is logged separately under the same id
+"""
 
+DATA_FRAME_NON_DUP = pandas.read_csv(
+    PATH, sep=",", 
+    low_memory=False).drop_duplicates(subset="id_nehody")
 
-def map_hour_to_period(hour):
-    if 5 <= hour <= 9:
-        return "Morning (5-9)"
-    elif 10 <= hour <= 13:
-        return "Midday (10-13)"
-    elif 14 <= hour <= 18:
-        return "Afternoon (14-18)"
-    elif 19 <= hour <= 23:
-        return "Evening (19-23)"
-    elif 0 <= hour <= 4:
-        return "Night (0-4)"
-    else:
-        return None
-
-
-DATA_FRAME = pandas.read_csv(PATH, sep=",", low_memory=False).drop_duplicates(subset="id_nehody")
-
+"""no duplicate dataframe"""
+DATA_FRAME_ALL = pandas.read_csv(
+    PATH, sep=",", 
+    low_memory=False)
 
 #calculates percentage of all accidents caused by alcohol
 #not all accidents have found the cause - option "nezjistovano"
-def caused_by_alcohol(DATA_FRAME):
+def caused_by_alcohol(DATA_FRAME_NON_DUP):
     alcohol_caused_accidents = (
-        (DATA_FRAME["alkohol_vinik"] == "ano")
+        (DATA_FRAME_NON_DUP["alkohol_vinik"] == "ano")
         .mean()
         .mul(100)
         .round(2)
@@ -46,10 +38,10 @@ def caused_by_alcohol(DATA_FRAME):
 
 #calculates percentage of all accidents per day of the week
 #sorted by the highest percentage first
-def percent_per_day(DATA_FRAME):
+def percent_per_day(DATA_FRAME_NON_DUP):
     day_percentages = (
-        DATA_FRAME["den"]
-        .replace(DAY_MAP)
+        DATA_FRAME_NON_DUP["den"]
+        .replace(mapping.DAY_MAP)
         .value_counts(normalize=True)
         .mul(100)
         .round(2)
@@ -59,8 +51,8 @@ def percent_per_day(DATA_FRAME):
 
 
 #calculates percentage of all accidents per time of day
-def percent_per_day_time(DATA_FRAME):
-    periods = DATA_FRAME["hodina"].apply(map_hour_to_period).dropna()
+def percent_per_day_time(DATA_FRAME_NON_DUP):
+    periods = DATA_FRAME_NON_DUP["hodina"].apply(mapping.map_hour_to_period).dropna()
     time_of_day = (
         periods.value_counts(normalize=True)
         .mul(100)
@@ -70,13 +62,42 @@ def percent_per_day_time(DATA_FRAME):
     return time_of_day
 
 
-#calculates relation between injuries and people without a seatbelt
-def seatbelt_injury(DATA_FRAME):
-    pass
+#calculates relation between injuries and drivers 
+#without a seatbelt and under the influence
+def seatbelt_injury(DATA_FRAME_ALL):
+    df = (
+        DATA_FRAME_ALL
+        .dropna(subset=[
+            "stav_ridic",
+            "nasledek",
+            "ozn_osoba",
+            "osoba"
+        ])
+        .query("osoba.str.contains('řidič')", engine="python")
+        .assign(
+            dui=lambda d: d["stav_ridic"].str.contains(
+                r"Pod vlivem alkoholu|Pod vlivem drog|Pod vlivem léků", case=False, na=False
+            ),
+            no_seatbelt=lambda d: d["ozn_osoba"].str.contains(
+                r"bezpečnostní vak \(airbag\) v činnosti - osoba nepřipoutaná|nepřipoutaný bezpečnostními pásy",
+                case=False, na=False
+            ),
+            injury=lambda d: d["nasledek"].map(mapping.injury_map),
+        )
+    )
+
+    order = ["none", "minor", "severe", "fatal"]
+    summary = pandas.crosstab(
+        [df["dui"], df["no_seatbelt"]],
+        df["injury"],
+        normalize="index"
+    ).reindex(columns=order).mul(100).round(2)
+
+    return summary
 
 
 #calculates the most dangerous city parts
-def city_part(DATA_FRAME):
+def city_part(DATA_FRAME_NON_DUP):
     pass
 
 
@@ -90,20 +111,25 @@ def cli():
 @cli.command()
 def alcohol():
     print("Percentage of accidents directly caused by alcohol")
-    print(caused_by_alcohol(DATA_FRAME))
+    print(caused_by_alcohol(DATA_FRAME_NON_DUP))
 
 @cli.command()
 def days():
     print("Days sorted by the most accidents")
-    for day, value in percent_per_day(DATA_FRAME).items():
+    for day, value in percent_per_day(DATA_FRAME_NON_DUP).items():
         print(f"{day}: {value}%")
 
 @cli.command()
 def time():
     print("Times of day with the most accidents")
-    for time, value in percent_per_day_time(DATA_FRAME).items():
+    for time, value in percent_per_day_time(DATA_FRAME_NON_DUP).items():
         print(f"{time}: {value}%")
 
+@cli.command()
+def seatbelt():
+    print("Relationship between driver driving under the influence," \
+    "wearing a seatbelt and resulting injury")
+    print(seatbelt_injury(DATA_FRAME_ALL))
 
 
 
