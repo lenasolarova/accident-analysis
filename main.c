@@ -9,23 +9,24 @@
 bool parse_parameters(int argc, char *argv[]){
     if (argc == 2){
         if (!strcmp(argv[1], "alcohol")){
-            open_file();
-            printf("%s\n", "alc");
+            AlcoholStats stats = {0};
+            open_file(alcohol_handler, &stats);
+            printf("Alcohol-related: %d of %d (%.2f%%)\n",
+                stats.alcohol_related,
+                stats.total,
+                (stats.total > 0 ? (100.0 * stats.alcohol_related / stats.total) : 0));
             return EXIT_SUCCESS;
         }
         else if (!strcmp(argv[1], "days")){
             //call days func
-            printf("%s\n", "days");
             return EXIT_SUCCESS;
         }
         else if (!strcmp(argv[1], "seatbelt")){
             //call sb func
-            printf("%s\n", "seat");
             return EXIT_SUCCESS;
         }
         else if (!strcmp(argv[1], "time")){
             //call time func
-            printf("%s\n", "time");
             return EXIT_SUCCESS;
         }
         else if (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h")){
@@ -44,9 +45,6 @@ bool parse_parameters(int argc, char *argv[]){
 
 int main(int argc, char *argv[]){
     parse_parameters(argc, argv);
-
-
-
 
     return EXIT_SUCCESS;
 }

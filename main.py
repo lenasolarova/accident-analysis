@@ -29,11 +29,9 @@ DATA_FRAME_ALL = pandas.read_csv(
 def caused_by_alcohol(DATA_FRAME_NON_DUP):
     alcohol_caused_accidents = (
         (DATA_FRAME_NON_DUP["alkohol_vinik"] == "ano")
-        .mean()
-        .mul(100)
-        .round(2)
+        .mean() * 100
     )
-    return alcohol_caused_accidents
+    return round(alcohol_caused_accidents, 2)
     
 
 #calculates percentage of all accidents per day of the week
@@ -94,14 +92,6 @@ def seatbelt_injury(DATA_FRAME_ALL):
     ).reindex(columns=order).mul(100).round(2)
 
     return summary
-
-
-#calculates the most dangerous city parts
-#TODO decide if this one is adding any value for the script
-def city_part(DATA_FRAME_NON_DUP):
-    pass
-
-
 
 
 # ------------------------------ CLI ------------------------------
