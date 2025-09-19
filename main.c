@@ -7,26 +7,29 @@
 #include "processing.h"
 
 bool parse_parameters(int argc, char *argv[]){
+    const char* day_array[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+
     if (argc == 2){
         if (!strcmp(argv[1], "alcohol")){
             AlcoholStats stats = {0};
             open_file(alcohol_handler, &stats);
-            printf("Alcohol-related: %d of %d (%.2f%%)\n",
-                stats.alcohol_related,
-                stats.total,
-                (stats.total > 0 ? (100.0 * stats.alcohol_related / stats.total) : 0));
+            printf("Percentage of accidents directly caused by alcohol: \n%.2f%%\n",
+                100.0 * stats.alcohol_related / stats.total);
             return EXIT_SUCCESS;
         }
         else if (!strcmp(argv[1], "days")){
-            //call days func
+            DayStats stats = {0};
+            open_file(days_handler, &stats);
+            printf("\nDays of the week by their respective percentage of accidents: \n%");
+            for (int i = 0; i < 7; i++){
+                printf("%s: %.2f%%\n",
+                day_array[i],
+                100.0 * stats.day_counts[i] / stats.total);
+            }
             return EXIT_SUCCESS;
         }
         else if (!strcmp(argv[1], "seatbelt")){
             //call sb func
-            return EXIT_SUCCESS;
-        }
-        else if (!strcmp(argv[1], "time")){
-            //call time func
             return EXIT_SUCCESS;
         }
         else if (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h")){

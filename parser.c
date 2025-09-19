@@ -6,15 +6,18 @@
 #include "parser.h"
 #include "processing.h"
 
-typedef void (*RowHandler)(char **header, int ncols, char **row, void *userdata);
+typedef void (*RowHandler)(char **header, int ncols, char **row, void *userdata, char duplicate_id[75000][20], int *dup_count);
 
 bool open_file(RowHandler handler, void* stats){
+    char duplicate_id[75000][20] = {{0}};
+    int dup_count = 0;
+    
     FILE* file_pointer = fopen("dopravni_nehody_-1895066464895987623.csv", "r");
     if (file_pointer == NULL){
         return EXIT_FAILURE;
     }
 
-    char **header = NULL;
+    char** header = NULL;
     int ncols = 0;
 
     char line[2048];
@@ -32,13 +35,8 @@ bool open_file(RowHandler handler, void* stats){
 
         char **fields = parse_one_line(line, &ncols);
 
-        handler(header, ncols, fields, stats);
+        handler(header, ncols, fields, stats, duplicate_id, &dup_count);
 
-        /*for (int i = 0; i < ncols; i++) {
-            printf("    [%s] %s\n", header[i], fields[i]);
-            free(fields[i]);
-        }
-        printf("--------------------\n");*/
         free(fields);
     }
     
@@ -50,7 +48,7 @@ bool open_file(RowHandler handler, void* stats){
 /*
 parsing a single line
 cannot use strtok on "," because the set contains
-values wrappen in "" that contain a "," inside
+values wrapped in "" that contain a "," inside
 */
 char** parse_one_line(char* line, int* count) {
     char** fields = malloc(256 * sizeof(char*));
@@ -89,7 +87,6 @@ char** parse_one_line(char* line, int* count) {
         //skip comma like strtok would
         if (*pointer == ',') pointer++;
     }
-
     return fields;
 }
 
@@ -100,4 +97,13 @@ int get_col_index(char **header, int ncols, const char *colname) {
             return i;
     }
     return -1;
+}
+
+bool is_duplicate(char duplicate_id[][20], int dup_count, const char *id) {
+    for (int i = 0; i < dup_count; i++) {
+        if (strcmp(duplicate_id[i], id) == 0) {
+            return true;
+        }
+    }
+    return false;
 }

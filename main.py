@@ -27,38 +27,29 @@ DATA_FRAME_ALL = pandas.read_csv(
 #calculates percentage of all accidents caused by alcohol
 #not all accidents have found the cause - option "nezjistovano"
 def caused_by_alcohol(DATA_FRAME_NON_DUP):
+    mask = DATA_FRAME_NON_DUP["alkohol_vinik"] != "nezjistovano"
     alcohol_caused_accidents = (
-        (DATA_FRAME_NON_DUP["alkohol_vinik"] == "ano")
-        .mean() * 100
-    )
+        (DATA_FRAME_NON_DUP.loc[mask, "alkohol_vinik"] == "ano")
+        .mean() * 100)
+
     return round(alcohol_caused_accidents, 2)
     
 
 #calculates percentage of all accidents per day of the week
-#sorted by the highest percentage first
 def percent_per_day(DATA_FRAME_NON_DUP):
+    day_series = DATA_FRAME_NON_DUP["den"].replace(mapping.DAY_MAP)
+
     day_percentages = (
-        DATA_FRAME_NON_DUP["den"]
-        .replace(mapping.DAY_MAP)
+        day_series
         .value_counts(normalize=True)
         .mul(100)
         .round(2)
-        .to_dict()
     )
-    return day_percentages
 
+    ordered_days = [mapping.DAY_MAP[i] for i in sorted(mapping.DAY_MAP.keys())]
+    day_percentages = day_percentages.reindex(ordered_days, fill_value=0)
 
-#calculates percentage of all accidents per time of day
-def percent_per_day_time(DATA_FRAME_NON_DUP):
-    periods = DATA_FRAME_NON_DUP["hodina"].apply(mapping.map_hour_to_period).dropna()
-    time_of_day = (
-        periods.value_counts(normalize=True)
-        .mul(100)
-        .round(2)
-        .to_dict()
-    )
-    return time_of_day
-
+    return day_percentages.to_dict()
 
 #calculates relation between injuries and drivers 
 #without a seatbelt and under the influence
@@ -104,17 +95,11 @@ def alcohol():
     print("Percentage of accidents directly caused by alcohol")
     print(caused_by_alcohol(DATA_FRAME_NON_DUP))
 
-@cli.command(help="Days of the week sorted by the highest percentage of accidents")
+@cli.command(help="Days of the week by their respective percentage of accidents:")
 def days():
-    print("Days of the week sorted by the highest percentage of accidents")
+    print("Days of the week by their respective percentage of accidents:")
     for day, value in percent_per_day(DATA_FRAME_NON_DUP).items():
         print(f"{day}: {value}%")
-
-@cli.command(help="Times of day with the most accidents")
-def time():
-    print("Times of day with the most accidents")
-    for time, value in percent_per_day_time(DATA_FRAME_NON_DUP).items():
-        print(f"{time}: {value}%")
 
 @cli.command(help="Relationship between driver driving under the influence," \
     "wearing a seatbelt and resulting injury")
@@ -122,7 +107,6 @@ def seatbelt():
     print("Relationship between driver driving under the influence," \
     "wearing a seatbelt and resulting injury")
     print(seatbelt_injury(DATA_FRAME_ALL))
-
 
 
 if __name__ == "__main__":
