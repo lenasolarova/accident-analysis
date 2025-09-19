@@ -12,7 +12,7 @@ bool open_file(RowHandler handler, void* stats){
     char duplicate_id[75000][20] = {{0}};
     int dup_count = 0;
     
-    FILE* file_pointer = fopen("dopravni_nehody_-1895066464895987623.csv", "r");
+    FILE* file_pointer = fopen("../dopravni_nehody_-1895066464895987623.csv", "r");
     if (file_pointer == NULL){
         return EXIT_FAILURE;
     }

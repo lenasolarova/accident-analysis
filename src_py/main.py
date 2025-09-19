@@ -7,7 +7,7 @@ import mapping
 import importlib
 importlib.reload(mapping)
 
-PATH = "dopravni_nehody_-1895066464895987623.csv"
+PATH = "../dopravni_nehody_-1895066464895987623.csv"
 
 """
 dataframe with no duplicates = duplicate in this file means 
