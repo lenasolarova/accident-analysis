@@ -3,10 +3,6 @@ import click
 
 import mapping
 
-#TODO delete after I am done with changing mapping.py
-import importlib
-importlib.reload(mapping)
-
 PATH = "../dopravni_nehody_-1895066464895987623.csv"
 
 """
@@ -24,8 +20,11 @@ DATA_FRAME_ALL = pandas.read_csv(
     PATH, sep=",", 
     low_memory=False)
 
-#calculates percentage of all accidents caused by alcohol
-#not all accidents have found the cause - option "nezjistovano"
+"""
+calculates percentage of all accidents caused by alcohol
+not all accidents have found the cause - option "nezjistovano"
+those are skipped
+"""
 def caused_by_alcohol(DATA_FRAME_NON_DUP):
     mask = DATA_FRAME_NON_DUP["alkohol_vinik"] != "nezjistovano"
     alcohol_caused_accidents = (

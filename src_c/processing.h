@@ -17,4 +17,10 @@ typedef struct {
     int day_counts[7];
 } DayStats;
 
+void seatbelt_handler(char** header, int ncols, char** row, void *userdata, char duplicate_id[5000][20], int *dup_count);
+
+typedef struct {
+    int counts[2][2][4]; //[dui][seatbelt][injury]
+} SeatbeltStats;
+
 #endif

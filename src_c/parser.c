@@ -90,7 +90,6 @@ char** parse_one_line(char* line, int* count) {
     return fields;
 }
 
-
 int get_col_index(char **header, int ncols, const char *colname) {
     for (int i = 0; i < ncols; i++) {
         if (strcmp(header[i], colname) == 0)
