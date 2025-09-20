@@ -114,7 +114,7 @@ def days():
         print(f"{day}: {value}%")
 
 @cli.command\
-    (help="Relationship between driver driving under the influence," \
+    (help="Relationship between dui," \
     "wearing a seatbelt and resulting injury")
 def seatbelt():
     print\

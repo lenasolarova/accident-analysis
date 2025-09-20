@@ -42,14 +42,12 @@ bool parse_parameters(int argc, char *argv[]){
             return EXIT_SUCCESS;
         }
         else if (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h")){
-            printf("Supported arguments are:\n   alcohol\n   days\n   \
-                    seatbelt\n   time\n");
+            printf("Supported arguments are:\n   alcohol\n   days\n   seatbelt\n");
             return EXIT_SUCCESS;
         }
         else{
             fprintf(stderr, "Invalid option\n");
-            printf("Supported arguments are:\n   alcohol\n   days\n   \
-                    seatbelt\n   time\n");
+            printf("Supported arguments are:\n   alcohol\n   days\n   seatbelt\n");
             return EXIT_FAILURE;
         }
     }

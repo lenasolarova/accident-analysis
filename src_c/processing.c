@@ -17,7 +17,7 @@ void alcohol_handler(char **header, int ncols, char **row, void *userdata,
 
     //decides whether to continue (only when it is not a duplicate)
     //and stores the id for later checks
-    if (store_duplicate_id(header, ncols, duplicate_id, dup_count)) return;
+    if (!store_duplicate_id(header, ncols, duplicate_id, dup_count)) return;
 
     //only continues working with the caused by alcohol (alkohol_vinik) column
     int cause_index = get_col_index(header, ncols, "alkohol_vinik");
@@ -38,7 +38,7 @@ void days_handler(char **header, int ncols, char **row, void *userdata,
 
     DayStats *stats = (DayStats*) userdata;
 
-    if (store_duplicate_id(header, ncols, duplicate_id, dup_count)) return;
+    if (!store_duplicate_id(header, ncols, duplicate_id, dup_count)) return;
 
     //only continues working with the day (den) column which is an int (1 to 7)
     int day_index = get_col_index(header, ncols, "den");
