@@ -40,9 +40,19 @@ bool open_file(RowHandler handler, void* stats){
         //chosen handler retrives necessary information
         handler(header, ncols, fields, stats, duplicate_id, &dup_count);
 
+        //freeing all the fields after we are done using them
+        for (int i = 0; i < ncols; i++){
+            free(fields[i]);
+        }
         free(fields);
     }
-    
+
+    //freeing memory from the header columns and header itself
+    for (int i = 0; i < ncols; i++){
+        free(header[i]);
+    }
+    free(header);
+
     fclose(file_pointer);
     return EXIT_SUCCESS;
 }
