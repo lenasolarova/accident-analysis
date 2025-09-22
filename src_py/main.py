@@ -3,20 +3,6 @@ import click
 
 import mapping
 
-PATH = "../dopravni_nehody_-1895066464895987623.csv"
-
-#dataframe with no duplicates = duplicate in this file means 
-#the same accident_id (id_nehody) because every person 
-#involved is logged separately under the same id
-DATA_FRAME_NON_DUP = pandas.read_csv(
-    PATH, sep=",", 
-    low_memory=False).drop_duplicates(subset="id_nehody")
-
-#no duplicate dataframe
-DATA_FRAME_ALL = pandas.read_csv(
-    PATH, sep=",", 
-    low_memory=False)
-
 
 #calculates percentage of all accidents caused by alcohol
 def caused_by_alcohol(DATA_FRAME_NON_DUP):
@@ -50,10 +36,10 @@ def percent_per_day(DATA_FRAME_NON_DUP):
 
 #calculates relation between severity of injuries and wearing a seatbelt
 #while under the influence
-def seatbelt_injury(DATA_FRAME_ALL):
+def seatbelt_injury(DATA_FRAME_NON_DUP):
     df = (
         #dropping any empty values
-        DATA_FRAME_ALL
+        DATA_FRAME_NON_DUP
         .dropna(subset=[
             "stav_ridic",
             "nasledek",
@@ -92,36 +78,59 @@ def seatbelt_injury(DATA_FRAME_ALL):
 
 # ------------------------------ CLI ------------------------------
 
-@click.group\
-    (help="This script analyzes car accidents from Brno, Czechia")
-def cli():
-    pass
+def load_data(path):
+    return pandas.read_csv(path, sep=",", low_memory=False)
+
+@click.group(help="This script analyzes car accidents from Brno, Czechia")
+@click.option(
+    "--file",
+    "csv_file",
+    required=True,
+    type=click.Path(exists=True),
+    help="Path to the accident CSV file"
+)
+@click.pass_context
+def cli(ctx, csv_file):
+    df_all = load_data(csv_file)
+    ctx.obj = {
+        #full dataframe
+        "DATA_FRAME_ALL": df_all,
+        #dataframe with no duplicates = duplicate in this file means 
+        #the same accident_id (id_nehody) because every person 
+        #involved is logged separately under the same id
+        "DATA_FRAME_NON_DUP": df_all.drop_duplicates(subset=["id_nehody"]),
+    }
 
 
 @cli.command\
     (help="Percentage of accidents directly caused by alcohol")
-def alcohol():
+@click.pass_context
+def alcohol(ctx):
+    df = ctx.obj["DATA_FRAME_NON_DUP"]
     print("Percentage of accidents directly caused by alcohol")
-    print(caused_by_alcohol(DATA_FRAME_NON_DUP))
+    print(caused_by_alcohol(df))
 
 @cli.command\
     (help="Days of the week by their respective percentage of accidents:")
-def days():
+@click.pass_context
+def days(ctx):
+    df = ctx.obj["DATA_FRAME_NON_DUP"]
     print\
     ("Days of the week by their respective percentage of accidents:")
 
-    for day, value in percent_per_day(DATA_FRAME_NON_DUP).items():
+    for day, value in percent_per_day(df).items():
         print(f"{day}: {value}%")
 
 @cli.command\
-    (help="Relationship between dui," \
-    "wearing a seatbelt and resulting injury")
-def seatbelt():
+    (help="Relationship between dui, wearing a seatbelt and resulting injury")
+@click.pass_context
+def seatbelt(ctx):
+    df = ctx.obj["DATA_FRAME_NON_DUP"]
     print\
     ("Relationship between driver driving under the influence," \
     "wearing a seatbelt and resulting injury")
 
-    print(seatbelt_injury(DATA_FRAME_ALL))
+    print(seatbelt_injury(df))
 
 
 if __name__ == "__main__":

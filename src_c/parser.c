@@ -7,13 +7,13 @@
 #include "processing.h"
 
 
-bool open_file(RowHandler handler, void* stats){
+bool open_file(char* csv_file, RowHandler handler, void* stats){
     char duplicate_id[75000][20] = {{0}};
     int dup_count = 0;
     
     //file opening
     FILE* file_pointer = 
-        fopen("../dopravni_nehody_-1895066464895987623.csv", "r");
+        fopen(csv_file, "r");
     //returning if we can not open the file
     if (file_pointer == NULL){
         return EXIT_FAILURE;

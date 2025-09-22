@@ -1,0 +1,8 @@
+id_nehody,den,osoba,alkohol_vinik,nasledek,ozn_osoba,stav_ridic
+1,1,řidič,ano,bez zraněn,nepřipoutan,pod vlivem drog
+2,5,řidič,ne,lehké zranění,nepřipoutan,pod vlivem drog
+3,5,řidič,ano,těžké zranění,nepřipoutan,nezjistovano
+4,7,řidič,ano,usmrcení,nepřipoutan,pod vlivem alkoholu
+3,1,řidič,ano,lehké zranění,nepřipoutan,pod vlivem alkoholu
+3,1,řidič,ano,usmrcení,nepřipoutan,pod vlivem alkoholu
+3,1,řidič,ano,usmrcení,nepřipoutan,pod vlivem alkoholu

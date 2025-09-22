@@ -7,7 +7,7 @@ typedef void (*RowHandler)(char **header, int ncols, char **row, void *userdata,
 
 //function for opening the csv file and parsing through it based on 
 //the handler it is called with
-bool open_file(RowHandler handler, void* stats);
+bool open_file(char* csv_file, RowHandler handler, void* stats);
 
 //function for parsing one line of a CSV file containing text wrapped in ""
 //that contains commas inside (unable to use simple strtok)

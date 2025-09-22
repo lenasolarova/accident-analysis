@@ -10,19 +10,23 @@ bool parse_parameters(int argc, char *argv[]){
     const char* day_array[] = {"Monday", "Tuesday", "Wednesday", "Thursday",\
                              "Friday", "Saturday", "Sunday"};
 
-    if (argc == 2){
-        if (!strcmp(argv[1], "alcohol")){
+    if (argc == 2 && (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h"))){
+        printf("Supported arguments are:\n   alcohol\n   days\n   seatbelt\n");
+        return EXIT_SUCCESS;
+    }
+    else if (argc == 3){
+        if (!strcmp(argv[2], "alcohol")){
             AlcoholStats stats = {0};
-            open_file(alcohol_handler, &stats);
+            open_file(argv[1], alcohol_handler, &stats);
             printf("Percentage of accidents directly caused by alcohol:\
                      \n%.2f%%\n",
                 100.0 * stats.alcohol_related / stats.total);
 
             return EXIT_SUCCESS;
         }
-        else if (!strcmp(argv[1], "days")){
+        else if (!strcmp(argv[2], "days")){
             DayStats stats = {0};
-            open_file(days_handler, &stats);
+            open_file(argv[1], days_handler, &stats);
             printf("\nDays of the week by their respective \
                     percentage of accidents: \n%");
             for (int i = 0; i < 7; i++){
@@ -32,23 +36,15 @@ bool parse_parameters(int argc, char *argv[]){
             }
             return EXIT_SUCCESS;
         }
-        else if (!strcmp(argv[1], "seatbelt")){
+        else if (!strcmp(argv[2], "seatbelt")){
             SeatbeltStats stats;
             memset(&stats, 0, sizeof(stats));
-            open_file(seatbelt_handler, &stats);
+
+            open_file(argv[1], seatbelt_handler, &stats);
 
             print_table(stats);
 
             return EXIT_SUCCESS;
-        }
-        else if (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h")){
-            printf("Supported arguments are:\n   alcohol\n   days\n   seatbelt\n");
-            return EXIT_SUCCESS;
-        }
-        else{
-            fprintf(stderr, "Invalid option\n");
-            printf("Supported arguments are:\n   alcohol\n   days\n   seatbelt\n");
-            return EXIT_FAILURE;
         }
     }
     fprintf(stderr, "Invalid number of arguments");
