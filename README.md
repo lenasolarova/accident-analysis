@@ -15,3 +15,6 @@ To run the C code, simply run it from the *src_c* directory using ```./main <pat
 * ```./main.py "../dopravni_nehody_-1895066464895987623.csv" alcohol```
 * ```./main.py "../dopravni_nehody_-1895066464895987623.csv" days```
 * ```./main.py "../dopravni_nehody_-1895066464895987623.csv" seatbelt```
+
+## Comparison
+To generate out files for both C and python code, you can run ```./comparison.sh``` which will compile the C code, run valgrind (memory checks) on it, run time command, tests and finally calculate number of lines of code. Similarly for python code, it will also run time command, run tests with pytest and calculate lines of code.
