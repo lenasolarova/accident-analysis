@@ -12,6 +12,7 @@ touch py.out
 C_PROG="main"
 C_SRC="*.c"
 PY_PROG="main.py"
+CSV="../dopravni_nehody_-1895066464895987623.csv"
 
 OPTIONS=("alcohol" "days" "seatbelt")
 
@@ -27,25 +28,26 @@ echo "2. RESULTS in py.out and c.out files"
 for opt in "${OPTIONS[@]}"; do
     echo "Option: $opt"
 
-    #running valgrind (memory checks) of c code
-    echo "  a. running memory checks by valgrind"
-    cd src_c
-    valgrind --leak-check=full ./$C_PROG "../dopravni_nehody_-1895066464895987623.csv" "$opt" >> ../c.out 2>&1
-
     #running time commands on both c and py code
+    cd src_c
     echo "  b. running time command on C code"
-    { time ./$C_PROG "../dopravni_nehody_-1895066464895987623.csv" "$opt"; } >> ../c.out 2>&1
+    { time ./$C_PROG "$CSV" "$opt"; } >> ../c.out 2>&1
     cd ..
 
     cd src_py
     echo "  c. running time command on python code"
-    { time python3 $PY_PROG --file="../dopravni_nehody_-1895066464895987623.csv" "$opt"; } >> ../py.out 2>&1
+    { time python3 $PY_PROG --file="$CSV" "$opt"; } >> ../py.out 2>&1
     cd ..
 done
 
 #tests
 echo "3. running pytest"
 pytest -v >> ../py.out 2>&1
+
+cd "$(dirname "$0")"
+echo "   running C tests"
+gcc unit_test.c src_c/parser.c src_c/processing.c -o test_runner
+./test_runner >> ../c.out 2>&1
 
 #non-comment lines in of code in c files (.c and .h)
 echo "4. C code lines (excluding comments):"

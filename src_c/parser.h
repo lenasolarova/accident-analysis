@@ -21,6 +21,6 @@ bool is_duplicate(char duplicate_id[][20], int dup_count, const char *id);
 
 //finds the accident id, checks if it has been already processed and stores it
 bool store_duplicate_id(char **header, int ncols, char duplicate_id[][20], 
-                        int *dup_count);
+                        char **row, int *dup_count);
 
 #endif

@@ -6,12 +6,14 @@ import mapping
 
 #calculates percentage of all accidents caused by alcohol
 def caused_by_alcohol(DATA_FRAME_NON_DUP):
-    #not all accidents have found the cause (nezjistovano)
-    mask = DATA_FRAME_NON_DUP["alkohol_vinik"] != "nezjistovano"
+    # exclude unknown cases
+    valid = DATA_FRAME_NON_DUP["alkohol_vinik"].isin(["ano", "ne"])
+    if valid.sum() == 0:
+        return 0.0
     alcohol_caused_accidents = (
-        (DATA_FRAME_NON_DUP.loc[mask, "alkohol_vinik"] == "ano")
-        .mean() * 100)
-
+        (DATA_FRAME_NON_DUP.loc[valid, "alkohol_vinik"] == "ano")
+        .mean() * 100
+    )
     return round(alcohol_caused_accidents, 2)
     
 

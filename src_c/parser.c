@@ -16,6 +16,7 @@ bool open_file(char* csv_file, RowHandler handler, void* stats){
         fopen(csv_file, "r");
     //returning if we can not open the file
     if (file_pointer == NULL){
+        perror("Error while opening file");
         return EXIT_FAILURE;
     }
 
@@ -125,16 +126,17 @@ bool is_duplicate(char duplicate_id[][20], int dup_count, const char *id) {
 
 //finds accident id, checks if it has been already processed and stores it
 bool store_duplicate_id(char **header, int ncols, char duplicate_id[][20], 
-                        int *dup_count){
+                        char** row, int *dup_count){
 
     int id_index = get_col_index(header, ncols, "id_nehody");
     if (id_index < 0) return true; //returns if we cannot check
     
     //returns if the id is duplicate
-    if (is_duplicate(duplicate_id, *dup_count, "id_nehody")) return true;
+    const char *id_value = row[id_index];
+    if (is_duplicate(duplicate_id, *dup_count, id_value)) return true;
 
     //stores this accident id in duplicate array for later
-    strncpy(duplicate_id[*dup_count], "id_nehody", 19);
+    strncpy(duplicate_id[*dup_count], id_value, 19);
     duplicate_id[*dup_count][19] = '\0';
     (*dup_count)++;
     
