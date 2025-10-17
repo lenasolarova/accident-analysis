@@ -10,6 +10,7 @@ void test_alcohol() {
     open_file("test.csv", alcohol_handler, &stats);
     double pct = 100.0 * stats.alcohol_related / stats.total;
     assert((int)pct == 75);
+    printf("✅ Test 1 has passed\n");
 }
 
 void test_days() {
@@ -21,6 +22,7 @@ void test_days() {
     assert((int)pct_mon == 25);
     assert((int)pct_fri == 50);
     assert((int)pct_sun == 25);
+    printf("✅ Test 2 has passed\n");
 }
 
 void test_seatbelt() {
@@ -30,12 +32,14 @@ void test_seatbelt() {
     for (int i = 0; i < 4; i++) total += stats.counts[1][1][i];
     double pct_minor = 100.0 * stats.counts[1][1][1] / total;
     assert((int)pct_minor == 33);
+    printf("✅ Test 3 has passed\n");
 }
 
 int main(){
     test_alcohol();
     test_days();
     test_seatbelt();
+    printf("--------------------------\n");
     printf("✅ All C tests have passed\n");
     return 0;
 }
